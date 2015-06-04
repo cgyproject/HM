@@ -28,6 +28,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".SettingActivity"/>
         <service
             android:name="com.cgy.health.service.BluetoothLeService"
             android:enabled="true" />

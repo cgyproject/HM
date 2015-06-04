@@ -8,9 +8,10 @@ import android.view.MenuItem;
 import android.widget.Button;
 import android.widget.TabHost;
 
-
-public class MainActivity extends TabActivity {
-
+/**
+ * Created by gun on 15. 6. 3.
+ */
+public class SettingActivity extends TabActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -20,7 +21,10 @@ public class MainActivity extends TabActivity {
         TabHost.TabSpec spec;
         Intent intent;
 
-        spec = tabHost.newTabSpec("health").setIndicator("운동중").setContent(R.id.tab1);
+        spec = tabHost.newTabSpec("beaconSetting").setIndicator("비콘위치설정").setContent(R.id.tab1);
+        tabHost.addTab(spec);
+
+        spec = tabHost.newTabSpec("machineSetting").setIndicator("기구위치설정").setContent(R.id.tab1);
         tabHost.addTab(spec);
     }
 
@@ -29,8 +33,14 @@ public class MainActivity extends TabActivity {
         super.onStart();
 
 
-        Button button = (Button) this.findViewById(R.id.selectBeaconBtn);
-        button.setText("비콘검색");
+        if ( this.getTabHost().getCurrentTab() == 0 ) {
+            Button button = (Button) this.findViewById(R.id.selectBeaconBtn);
+            button.setText("비콘검색");
+        }
+        else if ( this.getTabHost().getCurrentTab() == 1 ) {
+            Button button = (Button) this.findViewById(R.id.selectBeaconBtn);
+            button.setText("기구입력");
+        }
     }
 
 
@@ -53,9 +63,9 @@ public class MainActivity extends TabActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if ( id == 1 ) {
-            Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
-            startActivityForResult(intent, 1001);
+        if ( id == 0 ) {
+            Intent intent = new Intent(getApplicationContext(), MainActivity.class);
+            startActivityForResult(intent, 1002);
             return true;
         }
         else if ( id == 2) {
