@@ -2,5 +2,13 @@
     <string name="app_name">health</string>
 
     <string name="hello_world">Hello world!</string>
-    <string name="action_settings">Settings</string>
+    <string name="menu_setting">설정</string>
+    <string name="menu_exercise">운동</string>
+    <string name="menu_kill">종료</string>
+    <string name="setting_page_beacon_tab">비콘위치설정</string>
+    <string name="setting_page_machine_tab">기구위치설정</string>
+    <string name="setting_page_beacon_btn">비콘검색</string>
+    <string name="setting_page_machine_btn">기구검색</string>
+    <string name="exercise_page_tab">운동중</string>
+    <string name="exercise_page_beacon_btn">비콘검색</string>
 </resources>
