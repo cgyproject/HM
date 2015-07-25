@@ -38,7 +38,7 @@
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="비콘선택"
+        android:text="@string/setting_page_beacon_btn"
         android:id="@+id/selectBeaconBtn"
         android:layout_alignBottom="@+id/importBtn"
         android:layout_alignParentEnd="true" />

@@ -3,6 +3,8 @@ package com.cgy.health;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.v7.app.AlertDialog;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
@@ -16,11 +18,13 @@ public class MainActivity extends TabActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        AlertDialog a;
+
+
         TabHost tabHost = getTabHost();
         TabHost.TabSpec spec;
-        Intent intent;
 
-        spec = tabHost.newTabSpec("health").setIndicator("운동중").setContent(R.id.tab1);
+        spec = tabHost.newTabSpec("health").setIndicator(getString(R.string.exercise_page_tab)).setContent(R.id.tab1);
         tabHost.addTab(spec);
     }
 
@@ -28,20 +32,13 @@ public class MainActivity extends TabActivity {
     protected void onStart() {
         super.onStart();
 
-
         Button button = (Button) this.findViewById(R.id.selectBeaconBtn);
-        button.setText("비콘검색");
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        menu.clear();
 
-        menu.add(0, 0, 0, "메뉴1").setIcon(R.mipmap.ic_launcher);
-        menu.add(0, 1, 0, "메뉴2").setIcon(R.mipmap.ic_launcher);
-        menu.add(0, 2, 0, "메뉴3").setIcon(R.mipmap.ic_launcher);
-        // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }
@@ -53,17 +50,15 @@ public class MainActivity extends TabActivity {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if ( id == 1 ) {
+        if ( id == R.id.action_settings ) {
             Intent intent = new Intent(getApplicationContext(), SettingActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             startActivityForResult(intent, 1001);
+            this.finish();
             return true;
         }
-        else if ( id == 2) {
+        else if ( id == R.id.action_kill) {
             this.finish();
-        }
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
             return true;
         }
 
