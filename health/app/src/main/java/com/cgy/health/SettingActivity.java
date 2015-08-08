@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.TabHost;
+import android.widget.TextView;
 
 /**
  * Created by gun on 15. 6. 3.
@@ -30,7 +31,7 @@ public class SettingActivity extends TabActivity implements TabHost.OnTabChangeL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_setting);
 
         TabHost tabHost = getTabHost();
         TabHost.TabSpec spec;
@@ -43,57 +44,60 @@ public class SettingActivity extends TabActivity implements TabHost.OnTabChangeL
         tabHost.addTab(spec);
         tabHost.setOnTabChangedListener(this);
 
+        Button button = (Button) this.findViewById(R.id.beaconTabBeaconBtn);
+        button.setOnTouchListener(new OnTouchListener() {
+            @Override
+            public boolean onTouch(View var1, MotionEvent var2) {
+                switch (var2.getAction()) {
+                    case MotionEvent.ACTION_UP:
+                        break;
+                    default:
+                        return true;
+                }
+                if (isBeaconTab()) {
+                    LayoutInflater li = LayoutInflater.from(context);
+                    View promptsView = li.inflate(R.layout.prompts, null);
+                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
+                    // set prompts.xml to alertdialog builder
+                    alertDialogBuilder.setView(promptsView);
+                    final EditText xView = (EditText) promptsView.findViewById(R.id.xInput);
+                    final EditText yView = (EditText) promptsView.findViewById(R.id.yInput);
+                    final EditText nameView = (EditText) promptsView.findViewById(R.id.nameInput);
+                    // set dialog message
+                    alertDialogBuilder
+                            .setPositiveButton("OK",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            LayoutInflater li = LayoutInflater.from(context);
+                                            View promptsView = li.inflate(R.layout.prompts, null);
+                                            TextView t = (TextView) promptsView.findViewById(R.id.name);
+
+                                            String x = String.valueOf(xView.getText().toString());
+                                            String y = String.valueOf(yView.getText().toString());
+                                            BeaconHandler.getBeaconHandler().addBeacon((new Beacon(nameView.getText().toString(), xView.getText().toString(), yView.getText().toString())));
+                                        }
+                                    })
+                            .setNegativeButton("Cancel",
+                                    new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int id) {
+                                            dialog.cancel();
+                                        }
+                                    });
+//                    // create alert dialog
+                    AlertDialog alertDialog = alertDialogBuilder.create();
+//                    // show it
+                    alertDialog.show();
+                } else {
+                }
+                return true;
+            }
+        });
     }
 
 
     @Override
     protected void onStart() {
         super.onStart();
-
-        Button button = (Button) this.findViewById(R.id.selectBeaconBtn);
-        button.setText(R.string.setting_page_beacon_btn);
-        button.setOnTouchListener(new OnTouchListener() {
-            @Override
-            public boolean onTouch(View var1, MotionEvent var2) {
-                if ( isBeaconTab() ) {
-                    LayoutInflater li = LayoutInflater.from(context);
-                    View promptsView = li.inflate(R.layout.prompts, null);
-
-//                    FrameLayout fl = (FrameLayout) findViewById(R.id.custom);
-//                    fl.addView(this, new FrameLayout.LayoutParams(AlertDialog.MATCH_PARENT, WRAP_CONTENT));
-
-                    AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(context);
-
-                    // set prompts.xml to alertdialog builder
-                    alertDialogBuilder.setView(promptsView);
-
-                    // set dialog message
-                    alertDialogBuilder
-                            .setPositiveButton("OK",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog, int id) {
-                                            dialog.cancel();
-                                        }
-                                    })
-                            .setNegativeButton("Cancel",
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog,int id) {
-                                            dialog.cancel();
-                                        }
-                                    });
-
-//                    // create alert dialog
-                    AlertDialog alertDialog = alertDialogBuilder.create();
-//                    // show it
-                    alertDialog.show();
-                }
-                else {
-
-                }
-
-                return true;
-            }
-        });
     }
 
     private boolean isBeaconTab() {

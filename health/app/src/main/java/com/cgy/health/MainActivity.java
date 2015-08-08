@@ -74,8 +74,6 @@ public class MainActivity extends TabActivity {
         sendBtn = (Button)findViewById(R.id.sendBtn);
         receiveTextView = (TextView)findViewById(R.id.receiveText);
 
-        AlertDialog a;
-
         TabHost tabHost = getTabHost();
         TabHost.TabSpec spec;
 
@@ -88,8 +86,8 @@ public class MainActivity extends TabActivity {
 
     private View.OnClickListener sendBtnListener = new View.OnClickListener() {
         public void onClick(View v){
-            //이 부분이 로그상 Timer의 work count 증가 값 정의 하는 부분
-            //현재 Init 을 호출 하고 있지만 추후에 값을 전달해서 세팅 가능하도록 하면됨
+            //?�� �?분이 로그?�� Timer?�� work count 증�? �? ?��?�� ?��?�� �?�?
+            //?��?�� Init ?�� ?���? ?���? ?���?�? 추후?�� 값을 ?��?��?��?�� ?��?�� �??��?��?���? ?��면됨
             sendMessageToService(1);
         }
     };
@@ -190,5 +188,4 @@ public class MainActivity extends TabActivity {
             }
         }
     }
-
 }
