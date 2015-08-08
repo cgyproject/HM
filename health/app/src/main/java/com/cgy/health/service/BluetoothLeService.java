@@ -18,6 +18,9 @@ package com.cgy.health.service;
 
 import android.app.NotificationManager;
 import android.app.Service;
+import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothManager;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,8 +30,11 @@ import android.os.Messenger;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.cgy.health.ble.connect.SampleGattAttributes;
+
 import java.util.ArrayList;
 import java.util.Timer;
+import java.util.UUID;
 
 /**
  * Service for managing connection and data communication with a GATT server hosted on a
@@ -45,8 +51,32 @@ public class BluetoothLeService extends Service {
     int mValue = 0; // Holds last value set by a client.
     public static final int MSG_REGISTER_CLIENT = 1;
     public static final int MSG_UNREGISTER_CLIENT = 2;
-    public static final int MSG_SET_INT_VALUE = 3;
-    public static final int MSG_SET_STRING_VALUE = 4;
+    public static final int MSG_INIT_BEACON_LOCATION_CLIENT = 3;
+    public static final int MSG_DEVICE_LOCATION = 4;
+
+    private BluetoothManager mBluetoothManager;
+    private BluetoothAdapter mBluetoothAdapter;
+    private String mBluetoothDeviceAddress;
+    private BluetoothGatt mBluetoothGatt;
+    private int mConnectionState = STATE_DISCONNECTED;
+
+    private static final int STATE_DISCONNECTED = 0;
+    private static final int STATE_CONNECTING = 1;
+    private static final int STATE_CONNECTED = 2;
+
+    public final static String ACTION_GATT_CONNECTED =
+            "com.example.bluetooth.le.ACTION_GATT_CONNECTED";
+    public final static String ACTION_GATT_DISCONNECTED =
+            "com.example.bluetooth.le.ACTION_GATT_DISCONNECTED";
+    public final static String ACTION_GATT_SERVICES_DISCOVERED =
+            "com.example.bluetooth.le.ACTION_GATT_SERVICES_DISCOVERED";
+    public final static String ACTION_DATA_AVAILABLE =
+            "com.example.bluetooth.le.ACTION_DATA_AVAILABLE";
+    public final static String EXTRA_DATA =
+            "com.example.bluetooth.le.EXTRA_DATA";
+
+    public final static UUID UUID_HEARTㄴ_RATE_MEASUREMENT =
+            UUID.fromString(SampleGattAttributes.HEART_RATE_MEASUREMENT);
 
     final Messenger mMessenger = new Messenger(new IncomingHandler()); // Target we publish for clients to send messages to IncomingHandler.
 
@@ -64,7 +94,7 @@ public class BluetoothLeService extends Service {
                 case MSG_UNREGISTER_CLIENT:
                     mClients.remove(msg.replyTo);
                     break;
-                case MSG_SET_INT_VALUE:
+                case MSG_INIT_BEACON_LOCATION_CLIENT:
                     incrementby = msg.arg1;
                     sendMessageToUI(0);
                     break;
@@ -86,7 +116,7 @@ public class BluetoothLeService extends Service {
                 String str1 = "counter = "+ counter;
                 b.putString("str1", str1);
                 Log.i("SendString", "Send Str1 String" + counter);
-                Message msg = Message.obtain(null, MSG_SET_STRING_VALUE);
+                Message msg = Message.obtain(null, MSG_DEVICE_LOCATION);
                 msg.setData(b);
                 mClients.get(i).send(msg);
 

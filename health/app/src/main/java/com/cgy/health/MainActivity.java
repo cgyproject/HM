@@ -35,10 +35,10 @@ public class MainActivity extends TabActivity {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case BluetoothLeService.MSG_SET_INT_VALUE:
+                case BluetoothLeService.MSG_INIT_BEACON_LOCATION_CLIENT:
                     //receiveTextView.setText(msg.getData().getString("data"));
                     break;
-                case BluetoothLeService.MSG_SET_STRING_VALUE:
+                case BluetoothLeService.MSG_DEVICE_LOCATION:
                     receiveTextView.setText(msg.getData().getString("str1"));
                 default:
                     super.handleMessage(msg);
@@ -181,7 +181,7 @@ public class MainActivity extends TabActivity {
         if (mIsBound) {
             if (mService != null) {
                 try {
-                    Message msg = Message.obtain(null, BluetoothLeService.MSG_SET_INT_VALUE, intvaluetosend, 0);
+                    Message msg = Message.obtain(null, BluetoothLeService.MSG_INIT_BEACON_LOCATION_CLIENT, intvaluetosend, 0);
                     msg.replyTo = mMessenger;
                     mService.send(msg);
                 }
