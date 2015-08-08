@@ -1,5 +1,7 @@
 package com.cgy.health;
 
+import com.cgy.health.model.Beacon;
+
 import java.util.ArrayList;
 import java.util.List;
 

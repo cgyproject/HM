@@ -1,4 +1,4 @@
-package com.cgy.health;
+package com.cgy.health.model;
 
 /**
  * Created by gun on 2015-07-25.

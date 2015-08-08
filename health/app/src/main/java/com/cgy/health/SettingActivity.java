@@ -1,8 +1,6 @@
 package com.cgy.health;
 
-import android.app.ActionBar;
 import android.app.AlertDialog;
-import android.app.FragmentTransaction;
 import android.app.TabActivity;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -16,9 +14,10 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.TabHost;
 import android.widget.TextView;
+
+import com.cgy.health.model.Beacon;
 
 /**
  * Created by gun on 15. 6. 3.
