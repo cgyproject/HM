@@ -7,6 +7,7 @@ public class Beacon {
     private String name;
     private int x;
     private int y;
+    private String uuid;
 
     public Beacon(String name, int x, int y) {
         this.name = name;
@@ -37,5 +38,8 @@ public class Beacon {
     }
     public int getY() {
         return y;
+    }
+    public String getUuid() {
+        return uuid;
     }
 }
