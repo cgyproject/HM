@@ -2,31 +2,32 @@ package com.cgy.health.ble.connect;
 
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
-import android.os.Handler;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by jordan on 2015. 8. 8..
  */
 public class ScanBLEDevice {
-
-    private BluetoothAdapter mBluetoothAdapter;
     private boolean mScanning;
-    private Handler mHandler;
-
-
-    // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 10000;
 
-    private void scanLeDevice(final boolean enable) {
+    private BluetoothAdapter mBluetoothAdapter;
+    private List<BluetoothDevice> mBluetoothDeviceList = new ArrayList<BluetoothDevice>();
+
+
+    public ScanBLEDevice(BluetoothAdapter bluetoothAdapter) {
+        mBluetoothAdapter = bluetoothAdapter;
+    }
+
+    public void scanLeDevice(final boolean enable) {
         if (enable) {
             // Stops scanning after a pre-defined scan period.
-            mHandler.postDelayed(new Runnable() {
-                @Override
-                public void run() {
-                    mScanning = false;
-                    mBluetoothAdapter.stopLeScan(mLeScanCallback);
-                }
-            }, SCAN_PERIOD);
+           if(mScanning) {
+               mScanning = false;
+               mBluetoothAdapter.stopLeScan(mLeScanCallback);
+           }
 
             mScanning = true;
             mBluetoothAdapter.startLeScan(mLeScanCallback);
@@ -41,13 +42,19 @@ public class ScanBLEDevice {
                 @Override
                 public void onLeScan(final BluetoothDevice device, int rssi,
                                      byte[] scanRecord) {
-//                    runOnUiThread(new Runnable() {
-//                        @Override
-//                        public void run() {
-//                            mLeDeviceListAdapter.addDevice(device);
-//                            mLeDeviceListAdapter.notifyDataSetChanged();
-//                        }
-//                    });
+                    mBluetoothDeviceList.add(device);
                 }
-            };
+    };
+
+    public List<BluetoothDevice> getBlutoothDeviceList() {
+        mBluetoothDeviceList.clear();
+        scanLeDevice(true);
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        scanLeDevice(false);
+        return mBluetoothDeviceList;
+    }
 }

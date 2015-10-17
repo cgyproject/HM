@@ -19,8 +19,13 @@ package com.cgy.health.service;
 import android.app.NotificationManager;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothGatt;
+import android.bluetooth.BluetoothGattCallback;
+import android.bluetooth.BluetoothGattCharacteristic;
 import android.bluetooth.BluetoothManager;
+import android.bluetooth.BluetoothProfile;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,9 +36,12 @@ import android.os.RemoteException;
 import android.util.Log;
 
 import com.cgy.health.ble.connect.SampleGattAttributes;
+import com.cgy.health.ble.connect.ScanBLEDevice;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Timer;
+import java.util.TimerTask;
 import java.util.UUID;
 
 /**
@@ -44,7 +52,7 @@ public class BluetoothLeService extends Service {
 	private final static String TAG = BluetoothLeService.class.getSimpleName();
     private NotificationManager nm;
     private Timer timer = new Timer();
-    private int counter = 0, incrementby = 1;
+    private int counter = 0;
     private static boolean isRunning = false;
 
     ArrayList<Messenger> mClients = new ArrayList<Messenger>(); // Keeps track of all current registered clients.
@@ -53,12 +61,16 @@ public class BluetoothLeService extends Service {
     public static final int MSG_UNREGISTER_CLIENT = 2;
     public static final int MSG_INIT_BEACON_LOCATION_CLIENT = 3;
     public static final int MSG_DEVICE_LOCATION = 4;
+    public static final int MSG_START_SCAN_BEACON = 5;
 
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
     private String mBluetoothDeviceAddress;
     private BluetoothGatt mBluetoothGatt;
     private int mConnectionState = STATE_DISCONNECTED;
+
+    private ScanBLEDevice mScanBLEDevice;
+    private List<BluetoothDevice> mBluetoothDeviceList = new ArrayList<BluetoothDevice>();
 
     private static final int STATE_DISCONNECTED = 0;
     private static final int STATE_CONNECTING = 1;
@@ -95,8 +107,10 @@ public class BluetoothLeService extends Service {
                     mClients.remove(msg.replyTo);
                     break;
                 case MSG_INIT_BEACON_LOCATION_CLIENT:
-                    incrementby = msg.arg1;
                     sendMessageToUI(0);
+                    break;
+                case MSG_START_SCAN_BEACON:
+                    sendMessageToUI(MSG_START_SCAN_BEACON);
                     break;
                 default:
                     super.handleMessage(msg);
@@ -104,8 +118,7 @@ public class BluetoothLeService extends Service {
         }
     }
 
-    private void sendMessageToUI(int intvaluetosend) {
-        counter += incrementby;
+    private void sendMessageToUI(int msgType) {
         for (int i=mClients.size()-1; i>=0; i--) {
             try {
                 // Send data as an Integer
@@ -113,11 +126,11 @@ public class BluetoothLeService extends Service {
 
                 //Send data as a String
                 Bundle b = new Bundle();
-                String str1 = "counter = "+ counter;
-                b.putString("str1", str1);
+                b.putString("str1","");
                 Log.i("SendString", "Send Str1 String" + counter);
                 Message msg = Message.obtain(null, MSG_DEVICE_LOCATION);
                 msg.setData(b);
+
                 mClients.get(i).send(msg);
 
             }
@@ -132,9 +145,20 @@ public class BluetoothLeService extends Service {
     public void onCreate() {
         super.onCreate();
         Log.i(TAG, "Service Started.");
+
+        mBluetoothManager =
+                (BluetoothManager) getSystemService(Context.BLUETOOTH_SERVICE);
+        mBluetoothAdapter = mBluetoothManager.getAdapter();
+
+        mScanBLEDevice = new ScanBLEDevice(mBluetoothAdapter);
+
         //나중에 작업
         //showNotification();
-        //timer.scheduleAtFixedRate(new TimerTask(){ public void run() {onTimerTick();}}, 0, 100L);
+        timer.scheduleAtFixedRate(new TimerTask(){
+            public void run() {
+                onTimerTick();
+            }
+        }, 0, 10000L);
         isRunning = true;
     }
 
@@ -167,9 +191,18 @@ public class BluetoothLeService extends Service {
     private void onTimerTick() {
         Log.i("TimerTick", "Timer doing work." + counter);
         try {
-            counter += incrementby;
-            sendMessageToUI(counter);
+            mBluetoothDeviceList = mScanBLEDevice.getBlutoothDeviceList();
+            if(mBluetoothDeviceList.size() > 0) {
+                for(int i = 0; i < mBluetoothDeviceList.size(); i++) {
+                    //Log.i("TimerTick", "Bluetooth Device UUID" + mBluetoothDeviceList.get(i).getUuids()[0].toString());
+                    Log.i("TimerTick", "Bluetooth Device NAME" + mBluetoothDeviceList.get(i).getName());
+                    mBluetoothGatt = mBluetoothDeviceList.get(i).connectGatt(this, false, mGattCallback);
+                    //Log.i("TimerTick", "Bluetooth Device UUID" +  mBluetoothGatt.getServices().get(0).getUuid());
+                    //mBluetoothGatt.getServices().get(0).getUuid();
+                }
+            }
 
+            counter++;
         }
         catch (Throwable t) { //you should always ultimately catch all exceptions in timer tasks.
             Log.e("TimerTick", "Timer Tick Failed.", t);
@@ -185,6 +218,49 @@ public class BluetoothLeService extends Service {
         Log.i(TAG, "Service Stopped.");
         isRunning = false;
     }
+
+    // Various callback methods defined by the BLE API.
+    private final BluetoothGattCallback mGattCallback =
+            new BluetoothGattCallback() {
+                @Override
+                public void onConnectionStateChange(BluetoothGatt gatt, int status,
+                                                    int newState) {
+                    String intentAction;
+                    if (newState == BluetoothProfile.STATE_CONNECTED) {
+                        intentAction = ACTION_GATT_CONNECTED;
+                        mConnectionState = STATE_CONNECTED;
+                        //broadcastUpdate(intentAction);
+                        Log.i(TAG, "Connected to GATT server.");
+                        Log.i(TAG, "Attempting to start service discovery:" +
+                                mBluetoothGatt.discoverServices());
+                    } else if (newState == BluetoothProfile.STATE_DISCONNECTED) {
+                        intentAction = ACTION_GATT_DISCONNECTED;
+                        mConnectionState = STATE_DISCONNECTED;
+                        Log.i(TAG, "Disconnected from GATT server.");
+                        //broadcastUpdate(intentAction);
+                    }
+                }
+
+                @Override
+                // New services discovered
+                public void onServicesDiscovered(BluetoothGatt gatt, int status) {
+                    if (status == BluetoothGatt.GATT_SUCCESS) {
+                        //broadcastUpdate(ACTION_GATT_SERVICES_DISCOVERED);
+                    } else {
+                        Log.w(TAG, "onServicesDiscovered received: " + status);
+                    }
+                }
+
+                @Override
+                // Result of a characteristic read operation
+                public void onCharacteristicRead(BluetoothGatt gatt,
+                                                 BluetoothGattCharacteristic characteristic,
+                                                 int status) {
+                    if (status == BluetoothGatt.GATT_SUCCESS) {
+                        //  broadcastUpdate(ACTION_DATA_AVAILABLE, characteristic);
+                    }
+                }
+            };
 
 
 }
