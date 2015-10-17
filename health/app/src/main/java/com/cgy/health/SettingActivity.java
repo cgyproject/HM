@@ -6,12 +6,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Layout;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
+import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TabHost;
@@ -26,6 +28,7 @@ public class SettingActivity extends TabActivity implements TabHost.OnTabChangeL
     private final static String BEACON_SETTING_TABNAME = "beaconSetting";
     private final static String MACHINE_SETTING_TABNAME = "machineSetting";
     final Context context = this;
+    private BeaconField beaconField = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -74,6 +77,8 @@ public class SettingActivity extends TabActivity implements TabHost.OnTabChangeL
                                             String x = String.valueOf(xView.getText().toString());
                                             String y = String.valueOf(yView.getText().toString());
                                             BeaconHandler.getBeaconHandler().addBeacon((new Beacon(nameView.getText().toString(), xView.getText().toString(), yView.getText().toString())));
+
+                                            getBeaconField().drawBeacon();
                                         }
                                     })
                             .setNegativeButton("Cancel",
@@ -93,6 +98,14 @@ public class SettingActivity extends TabActivity implements TabHost.OnTabChangeL
         });
     }
 
+    private BeaconField getBeaconField() {
+        ViewGroup layout = (ViewGroup) this.findViewById(R.id.relatieLayout);
+        if ( this.beaconField == null ) {
+            beaconField = new BeaconField(this.findViewById(R.id.relatieLayout).getContext(), layout);
+        }
+
+        return beaconField;
+    }
 
     @Override
     protected void onStart() {

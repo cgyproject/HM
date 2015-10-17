@@ -24,7 +24,6 @@ import com.cgy.health.service.BluetoothLeService;
 
 
 public class MainActivity extends TabActivity {
-
     boolean mIsBound = false;
     Messenger mService = null;
     final Messenger mMessenger = new Messenger(new IncomingHandler());
@@ -110,10 +109,8 @@ public class MainActivity extends TabActivity {
         }
     }
 
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-
         getMenuInflater().inflate(R.menu.menu_main, menu);
         return true;
     }

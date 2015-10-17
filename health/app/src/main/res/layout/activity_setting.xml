@@ -51,4 +51,12 @@
         android:layout_centerVertical="true"
         android:layout_alignEnd="@+id/beaconTabBeaconBtn" />
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/relatieLayout"
+        android:layout_below="@android:id/tabhost"
+        android:layout_alignParentStart="true"
+        android:layout_above="@+id/importBtn"></RelativeLayout>
+
 </RelativeLayout>
