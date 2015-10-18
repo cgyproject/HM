@@ -7,8 +7,14 @@ public class Beacon {
     private String name;
     private int x;
     private int y;
+    private int rssi;
     private String uuid;
 
+    public Beacon(String name, String uuid, int rssi) {
+        this.name = name;
+        this.uuid = uuid;
+        this.rssi = rssi;
+    }
     public Beacon(String name, int x, int y) {
         this.name = name;
         this.x = x;
@@ -42,4 +48,6 @@ public class Beacon {
     public String getUuid() {
         return uuid;
     }
+    public void setRssi(int rssi) { this.rssi = rssi; }
+    public int getRssi() { return rssi; }
 }

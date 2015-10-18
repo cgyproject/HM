@@ -11,7 +11,6 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.Messenger;
 import android.os.RemoteException;
-import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -94,8 +93,21 @@ public class MainActivity extends TabActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
+        if(!mIsBound) {
+            startBLEService();
+        }
         Button button = (Button) this.findViewById(R.id.selectBeaconBtn);
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        try {
+            stopBLEService();
+        }
+        catch (Throwable t) {
+            Log.e("MainActivity", "Failed to unbind from the service", t);
+        }
     }
 
     @Override
@@ -148,8 +160,10 @@ public class MainActivity extends TabActivity {
     }
 
     void doBindService() {
-        bindService(new Intent(this, BluetoothLeService.class), mConnection, Context.BIND_AUTO_CREATE);
-        mIsBound = true;
+        if(!mIsBound) {
+            bindService(new Intent(this, BluetoothLeService.class), mConnection, Context.BIND_AUTO_CREATE);
+            mIsBound = true;
+        }
         //textStatus.setText("Binding.");
     }
 

@@ -3,6 +3,8 @@ package com.cgy.health.ble.connect;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 
+import com.cgy.health.model.Beacon;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -14,7 +16,7 @@ public class ScanBLEDevice {
     private static final long SCAN_PERIOD = 10000;
 
     private BluetoothAdapter mBluetoothAdapter;
-    private List<BluetoothDevice> mBluetoothDeviceList = new ArrayList<BluetoothDevice>();
+    private List<Beacon> mBluetoothDeviceList = new ArrayList<Beacon>();
 
 
     public ScanBLEDevice(BluetoothAdapter bluetoothAdapter) {
@@ -42,11 +44,12 @@ public class ScanBLEDevice {
                 @Override
                 public void onLeScan(final BluetoothDevice device, int rssi,
                                      byte[] scanRecord) {
-                    mBluetoothDeviceList.add(device);
+                    Beacon beacon = new Beacon(device.getName(), device.getAddress(), rssi);
+                    mBluetoothDeviceList.add(beacon);
                 }
     };
 
-    public List<BluetoothDevice> getBlutoothDeviceList() {
+    public List<Beacon> getBluetoothDeviceList() {
         mBluetoothDeviceList.clear();
         scanLeDevice(true);
         try {
