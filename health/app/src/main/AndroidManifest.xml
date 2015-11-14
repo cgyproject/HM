@@ -3,16 +3,13 @@
     package="com.cgy.health" >
 
     <uses-sdk
-        android:minSdkVersion="18"
+        android:minSdkVersion="21"
         android:targetSdkVersion="21" />
 
     <uses-permission android:name="android.permission.BLUETOOTH"/>
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN"/>
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
-
-    <uses-feature
-        android:name="android.hardware.bluetooth_le"
-        android:required="false" />
+    <uses-feature android:name="android.hardware.bluetooth_le" android:required="true"/>
 
     <application
         android:allowBackup="true"

@@ -1,14 +1,11 @@
 package com.cgy.health;
 
-import android.app.ActionBar;
 import android.content.Context;
-import android.text.Layout;
-import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsoluteLayout;
 import android.widget.Button;
 import android.widget.FrameLayout;
-import android.widget.ImageButton;
+
+import com.cgy.health.model.Beacon;
 
 import java.util.HashMap;
 import java.util.Map;
