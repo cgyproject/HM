@@ -3,6 +3,7 @@ package com.cgy.health.ble.connect;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 
+import com.cgy.health.lib.uk.co.alt236.bluetoothlelib.device.beacon.ibeacon.IBeaconDevice;
 import com.cgy.health.model.Beacon;
 
 import java.util.ArrayList;
@@ -44,7 +45,8 @@ public class ScanBLEDevice {
                 @Override
                 public void onLeScan(final BluetoothDevice device, int rssi,
                                      byte[] scanRecord) {
-                    Beacon beacon = new Beacon(device.getName(), device.getAddress(), rssi);
+                    IBeaconDevice beaconDevice = new IBeaconDevice(device, rssi, scanRecord);
+                    Beacon beacon = new Beacon(beaconDevice, device.getName(), device.getAddress(), rssi);
                     mBluetoothDeviceList.add(beacon);
                 }
     };

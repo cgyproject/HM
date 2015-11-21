@@ -1,5 +1,7 @@
 package com.cgy.health.model;
 
+import com.cgy.health.lib.uk.co.alt236.bluetoothlelib.device.beacon.ibeacon.IBeaconDevice;
+
 /**
  * Created by gun on 2015-07-25.
  */
@@ -9,8 +11,15 @@ public class Beacon {
     private int y;
     private int rssi;
     private String uuid;
+    private IBeaconDevice device;
 
     public Beacon(String name, String uuid, int rssi) {
+        this.name = name;
+        this.uuid = uuid;
+        this.rssi = rssi;
+    }
+    public Beacon(IBeaconDevice device, String name, String uuid, int rssi) {
+        this.device = device;
         this.name = name;
         this.uuid = uuid;
         this.rssi = rssi;
