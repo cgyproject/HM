@@ -22,9 +22,14 @@ public class Beacon {
     }
 
     public Beacon(String name, String x, String y) {
+        this(name, x, y, "");
+    }
+
+    public Beacon(String name, String x, String y, String uuid) {
         this.name = name;
         this.x = Integer.parseInt(x);
         this.y = Integer.parseInt(y);
+        this.uuid = uuid;
     }
 
     @Override

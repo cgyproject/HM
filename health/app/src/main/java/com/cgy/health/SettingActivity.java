@@ -18,8 +18,12 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TabHost;
 import android.widget.TextView;
+import android.widget.Spinner;
+import android.widget.ArrayAdapter;
 
 import com.cgy.health.model.Beacon;
+
+import java.util.ArrayList;
 
 /**
  * Created by gun on 15. 6. 3.
@@ -65,6 +69,11 @@ public class SettingActivity extends TabActivity implements TabHost.OnTabChangeL
                     final EditText xView = (EditText) promptsView.findViewById(R.id.xInput);
                     final EditText yView = (EditText) promptsView.findViewById(R.id.yInput);
                     final EditText nameView = (EditText) promptsView.findViewById(R.id.nameInput);
+                    final Spinner uuidSpinner = (Spinner) promptsView.findViewById(R.id.uuidInput);
+                    ArrayList<CharSequence> list = new ArrayList<CharSequence>();
+                    list.add("D0:39:72:C1:23:FD");
+                    ArrayAdapter adapter = new ArrayAdapter<CharSequence>(context, android.R.layout.simple_spinner_dropdown_item, list);
+                    uuidSpinner.setAdapter(adapter);
                     // set dialog message
                     alertDialogBuilder
                             .setPositiveButton("OK",
@@ -76,8 +85,9 @@ public class SettingActivity extends TabActivity implements TabHost.OnTabChangeL
 
                                             String x = String.valueOf(xView.getText().toString());
                                             String y = String.valueOf(yView.getText().toString());
-                                            BeaconHandler.getBeaconHandler().addBeacon((new Beacon(nameView.getText().toString(), xView.getText().toString(), yView.getText().toString())));
+                                            String uuid = (String)uuidSpinner.getSelectedItem();
 
+                                            BeaconHandler.getBeaconHandler().addBeacon((new Beacon(nameView.getText().toString(), xView.getText().toString(), yView.getText().toString(), uuid)));
                                             getBeaconField().drawBeacon();
                                         }
                                     })

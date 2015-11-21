@@ -7,6 +7,8 @@ import android.widget.FrameLayout;
 
 import com.cgy.health.model.Beacon;
 
+import com.cgy.health.model.Beacon;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,8 +44,8 @@ public class BeaconField {
             param.width = 300;
             param.height = 200;
             button.setLayoutParams(param);
-            button.setX(xPixel * beacon.getX() - (300 / 2));
-            button.setY(yPixel * beacon.getY() - (200/2));
+            button.setX(xPixel * beacon.getX() - (param.width / 2));
+            button.setY(yPixel * beacon.getY() - (param.height / 2));
             layout.addView(button);
 
             buttonMap.put(beacon.getUuid(), button);
