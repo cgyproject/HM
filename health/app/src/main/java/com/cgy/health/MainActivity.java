@@ -19,25 +19,32 @@ import android.widget.Button;
 import android.widget.TabHost;
 import android.widget.TextView;
 
+import com.cgy.health.model.Beacon;
 import com.cgy.health.service.BluetoothLeService;
+
+import java.util.HashMap;
+import java.util.Iterator;
 
 
 public class MainActivity extends TabActivity {
+    private final static String TAG = MainActivity.class.getSimpleName();
     boolean mIsBound = false;
     Messenger mService = null;
     final Messenger mMessenger = new Messenger(new IncomingHandler());
     Button sendBtn;
     TextView receiveTextView;
+    private HashMap<String, Beacon> mBluetoothDeviceMap = null;
 
     class IncomingHandler extends Handler {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case BluetoothLeService.MSG_INIT_BEACON_LOCATION_CLIENT:
-                    //receiveTextView.setText(msg.getData().getString("data"));
+                case BluetoothLeService.MSG_GET_DEVICES:
+                    mBluetoothDeviceMap = (HashMap<String, Beacon>)msg.getData().getSerializable("BluetoothDeviceMap");
+                    logBLEDevice();
                     break;
-                case BluetoothLeService.MSG_DEVICE_LOCATION:
-                    receiveTextView.setText(msg.getData().getString("str1"));
+                case BluetoothLeService.MSG_GET_DEVICE_LOCATION:
+                    //receiveTextView.setText(msg.getData().getString("str1"));
                 default:
                     super.handleMessage(msg);
             }
@@ -84,8 +91,6 @@ public class MainActivity extends TabActivity {
 
     private View.OnClickListener sendBtnListener = new View.OnClickListener() {
         public void onClick(View v){
-            //?�� �?분이 로그?�� Timer?�� work count 증�? �? ?��?�� ?��?�� �?�?
-            //?��?�� Init ?�� ?���? ?���? ?���?�? 추후?�� 값을 ?��?��?��?�� ?��?�� �??��?��?���? ?��면됨
             sendMessageToService(1);
         }
     };
@@ -190,7 +195,7 @@ public class MainActivity extends TabActivity {
         if (mIsBound) {
             if (mService != null) {
                 try {
-                    Message msg = Message.obtain(null, BluetoothLeService.MSG_INIT_BEACON_LOCATION_CLIENT, intvaluetosend, 0);
+                    Message msg = Message.obtain(null, BluetoothLeService.MSG_GET_DEVICES, intvaluetosend, 0);
                     msg.replyTo = mMessenger;
                     mService.send(msg);
                 }
@@ -198,5 +203,20 @@ public class MainActivity extends TabActivity {
                 }
             }
         }
+    }
+
+    private void logBLEDevice() {
+        if(mBluetoothDeviceMap == null)
+            return;
+
+        Iterator<String> bleKeyList = mBluetoothDeviceMap.keySet().iterator();
+        while(bleKeyList.hasNext()) {
+            String uuid = bleKeyList.next();
+            Beacon beacon = mBluetoothDeviceMap.get(uuid);
+            Log.i(TAG, "Bluetooth Device NAME : " + beacon.getName());
+            Log.i(TAG, "Bluetooth Device UUID : " + beacon.getDevice().getIBeaconData().getUUID());
+            Log.i(TAG, "Bluetooth Device TXPOWER : " + beacon.getDevice().getIBeaconData().getCalibratedTxPower());
+        }
+
     }
 }

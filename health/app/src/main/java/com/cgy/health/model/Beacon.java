@@ -10,18 +10,15 @@ public class Beacon {
     private int x;
     private int y;
     private int rssi;
-    private String uuid;
     private IBeaconDevice device;
 
-    public Beacon(String name, String uuid, int rssi) {
+    public Beacon(String name, int rssi) {
         this.name = name;
-        this.uuid = uuid;
         this.rssi = rssi;
     }
-    public Beacon(IBeaconDevice device, String name, String uuid, int rssi) {
+    public Beacon(IBeaconDevice device, String name, int rssi) {
         this.device = device;
         this.name = name;
-        this.uuid = uuid;
         this.rssi = rssi;
     }
     public Beacon(String name, int x, int y) {
@@ -38,7 +35,6 @@ public class Beacon {
         this.name = name;
         this.x = Integer.parseInt(x);
         this.y = Integer.parseInt(y);
-        this.uuid = uuid;
     }
 
     @Override
@@ -59,9 +55,12 @@ public class Beacon {
     public int getY() {
         return y;
     }
-    public String getUuid() {
-        return uuid;
-    }
     public void setRssi(int rssi) { this.rssi = rssi; }
     public int getRssi() { return rssi; }
+    public void setDevice(IBeaconDevice device) {
+        this.device = device;
+    }
+    public IBeaconDevice getDevice() {
+        return device;
+    }
 }
